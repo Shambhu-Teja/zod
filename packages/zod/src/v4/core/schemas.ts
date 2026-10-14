@@ -1020,19 +1020,6 @@ export const $ZodCIDRv6: core.$constructor<$ZodCIDRv6> = /*@__PURE__*/ core.$con
 );
 
 //////////////////////////////   ZodBase64   //////////////////////////////
-export function isValidBase64(data: string): boolean {
-  if (data === "") return true;
-  // atob ignores whitespace, so reject it up front.
-  if (/\s/.test(data)) return false;
-  if (data.length % 4 !== 0) return false;
-  try {
-    // @ts-ignore
-    atob(data);
-    return true;
-  } catch {
-    return false;
-  }
-}
 
 export interface $ZodBase64Def extends $ZodStringFormatDef<"base64"> {}
 export interface $ZodBase64Internals extends $ZodStringFormatInternals<"base64"> {}
@@ -1043,6 +1030,11 @@ export interface $ZodBase64 extends $ZodType {
 
 // lax on purpose: the quantified regexes.base64 overflows the regex stack on multi-MB input and its leading ^$| alternation leaks through template-literal composition; isValidBase64 enforces length and padding
 export const base64Charset: RegExp = /^[0-9a-zA-Z+/]*={0,2}$/;
+
+export function isValidBase64(data: string): boolean {
+  if (/\s/.test(data)) return false;
+  return data.length % 4 === 0 && base64Charset.test(data);
+}
 
 export const $ZodBase64: core.$constructor<$ZodBase64> = /*@__PURE__*/ core.$constructor(
   "$ZodBase64",
